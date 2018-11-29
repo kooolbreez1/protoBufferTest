@@ -4,8 +4,10 @@
 package proto
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
 	math "math"
 )
 
@@ -119,4 +121,78 @@ var fileDescriptor_3ea1eaa9328fbd1a = []byte{
 	0x97, 0x02, 0xe5, 0x89, 0x40, 0xac, 0xd6, 0x43, 0xb1, 0x50, 0x4a, 0x08, 0x4d, 0xb4, 0x20, 0xa7,
 	0x52, 0x89, 0x21, 0x89, 0x0d, 0x2c, 0x68, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xba, 0x65, 0x1f,
 	0x9d, 0xbe, 0x00, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// HandleOutputClient is the client API for HandleOutput service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type HandleOutputClient interface {
+	// Sends a greeting
+	SendOutput(ctx context.Context, in *OutputRequest, opts ...grpc.CallOption) (*OutputReply, error)
+}
+
+type handleOutputClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewHandleOutputClient(cc *grpc.ClientConn) HandleOutputClient {
+	return &handleOutputClient{cc}
+}
+
+func (c *handleOutputClient) SendOutput(ctx context.Context, in *OutputRequest, opts ...grpc.CallOption) (*OutputReply, error) {
+	out := new(OutputReply)
+	err := c.cc.Invoke(ctx, "/proto.HandleOutput/SendOutput", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HandleOutputServer is the server API for HandleOutput service.
+type HandleOutputServer interface {
+	// Sends a greeting
+	SendOutput(context.Context, *OutputRequest) (*OutputReply, error)
+}
+
+func RegisterHandleOutputServer(s *grpc.Server, srv HandleOutputServer) {
+	s.RegisterService(&_HandleOutput_serviceDesc, srv)
+}
+
+func _HandleOutput_SendOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OutputRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HandleOutputServer).SendOutput(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.HandleOutput/SendOutput",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HandleOutputServer).SendOutput(ctx, req.(*OutputRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _HandleOutput_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.HandleOutput",
+	HandlerType: (*HandleOutputServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendOutput",
+			Handler:    _HandleOutput_SendOutput_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "hearbeatConnect.proto",
 }
